@@ -1,0 +1,44 @@
+public class SumofSubsets {
+
+
+    public static void main(String[] args) {
+        int[] nums = {1, 2, 3};
+        findSubsets(nums);
+    }
+
+
+    public static void findSubsets(int[] nums) {
+        int[] subset = new int[nums.length];
+        System.out.println("Subsets and their sums:");
+        backtrack(nums, 0, subset, 0);
+    }
+
+
+    private static void backtrack(int[] nums, int start, int[] subset, int sum) {
+        printSubset(subset, sum);
+
+
+        for (int i = start; i < nums.length; i++) {
+            subset[i] = nums[i];
+            backtrack(nums, i + 1, subset, sum + nums[i]);
+            subset[i] = 0; // Backtrack
+        }
+    }
+
+
+    private static void printSubset(int[] subset, int sum) {
+        System.out.print("[");
+        boolean first = true;
+        for (int num : subset) {
+            if (!first) {
+                System.out.print(", ");
+            }
+            System.out.print(num);
+            first = false;
+        }
+        System.out.println("] => Sum: " + sum);
+    }
+}
+
+
+
