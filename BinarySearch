@@ -1,0 +1,58 @@
+import java.util.Scanner;
+
+public class BinarySearch {
+
+    // Binary search function
+    static int binarySearch(int arr[], int key) {
+        int left = 0, right = arr.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+
+            // Check if the key is present at the middle
+            if (arr[mid] == key)
+                return mid;
+
+            // If the key is greater, ignore the left half
+            if (arr[mid] < key)
+                left = mid + 1;
+
+            // If the key is smaller, ignore the right half
+            else
+                right = mid - 1;
+        }
+
+        // If the key is not present
+        return -1;
+    }
+
+    public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Taking user input for array size
+        System.out.print("Enter the size of the array: ");
+        int n = scanner.nextInt();
+
+        int arr[] = new int[n];
+
+        // Taking user input for array elements
+        System.out.println("Enter sorted elements of the array:");
+        for (int i = 0; i < n; i++) {
+            arr[i] = scanner.nextInt();
+        }
+
+        // Taking user input for the key to search
+        System.out.print("Enter the key to search: ");
+        int key = scanner.nextInt();
+
+        // Performing binary search
+        int result = binarySearch(arr, key);
+
+        // Displaying the result
+        if (result == -1)
+            System.out.println("Key not present in the array");
+        else
+            System.out.println("Key found at index " + result);
+
+        scanner.close();
+    }
+}
