@@ -1,0 +1,107 @@
+import java.util.Arrays;
+
+class Node {
+    int level, bound, pathCost;
+    int[] path;
+
+    public Node(int level, int bound, int pathCost, int[] path) {
+        this.level = level;
+        this.bound = bound;
+        this.pathCost = pathCost;
+        this.path = Arrays.copyOf(path, path.length);
+    }
+}
+
+public class TravelingSalesmanBranchAndBound {
+
+    private static int[][] graph;
+
+    public static int travelingSalesman(int[][] adjacencyMatrix) {
+        graph = adjacencyMatrix;
+        int n = graph.length;
+
+        Node rootNode = new Node(0, 0, 0, new int[n]);
+        rootNode.path[0] = 0;
+
+        // Priority queue to store nodes based on bound value
+        java.util.PriorityQueue<Node> priorityQueue = new java.util.PriorityQueue<>(
+                (node1, node2) -> Integer.compare(node1.bound, node2.bound));
+
+        // Initialize the priority queue with the root node
+        priorityQueue.add(rootNode);
+
+        int minCost = Integer.MAX_VALUE;
+
+        while (!priorityQueue.isEmpty()) {
+            Node currentNode = priorityQueue.poll();
+
+            if (currentNode.level == n - 1) {
+                // Reached a leaf node, update the minimum cost
+                minCost = Math.min(minCost, currentNode.pathCost + graph[currentNode.path[n - 1]][0]);
+                continue;
+            }
+
+            for (int i = 1; i < n; i++) {
+                if (currentNode.path[i] == 0) {
+                    Node childNode = createChildNode(currentNode, i);
+                    if (childNode.bound < minCost) {
+                        priorityQueue.add(childNode);
+                    }
+                }
+            }
+        }
+
+        return minCost;
+    }
+
+    private static Node createChildNode(Node parentNode, int city) {
+        int level = parentNode.level + 1;
+        int[] path = Arrays.copyOf(parentNode.path, parentNode.path.length);
+        path[level] = city;
+
+        int pathCost = parentNode.pathCost + graph[parentNode.path[level - 1]][city];
+
+        int bound = calculateBound(path, level);
+
+        return new Node(level, bound, pathCost, path);
+    }
+
+    private static int calculateBound(int[] path, int level) {
+        int bound = 0;
+
+        // Add the cost of edges already included in the path
+        for (int i = 0; i < level; i++) {
+            bound += graph[path[i]][path[i + 1]];
+        }
+
+        // Compute the minimum edge cost from the last visited city to any other city
+        int lastCity = path[level - 1];
+        bound += findMinEdgeCost(lastCity);
+
+        return bound;
+    }
+
+    private static int findMinEdgeCost(int city) {
+        int minCost = Integer.MAX_VALUE;
+
+        for (int i = 0; i < graph.length; i++) {
+            if (city != i && graph[city][i] < minCost) {
+                minCost = graph[city][i];
+            }
+        }
+
+        return minCost;
+    }
+
+    public static void main(String[] args) {
+        int[][] adjacencyMatrix = {
+                {0, 10, 15, 20},
+                {10, 0, 35, 25},
+                {15, 35, 0, 30},
+                {20, 25, 30, 0}
+        };
+
+        int minCost = travelingSalesman(adjacencyMatrix);
+        System.out.println("Minimum Cost of TSP: " + minCost);
+    }
+}
