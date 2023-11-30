@@ -1,0 +1,71 @@
+import java.util.PriorityQueue;
+
+class HuffmanNode implements Comparable<HuffmanNode> {
+    char data;
+    int frequency;
+    HuffmanNode left, right;
+
+    public HuffmanNode(char data, int frequency) {
+        this.data = data;
+        this.frequency = frequency;
+    }
+
+    @Override
+    public int compareTo(HuffmanNode node) {
+        return this.frequency - node.frequency;
+    }
+}
+
+public class HuffmanCoding {
+    public static void main(String[] args) {
+        String inputString = "hello world";
+        HuffmanNode root = buildHuffmanTree(inputString);
+        printCodes(root, new StringBuilder());
+    }
+
+    private static HuffmanNode buildHuffmanTree(String input) {
+        int[] frequency = new int[256]; // ASCII characters
+
+        for (char c : input.toCharArray()) {
+            frequency[c]++;
+        }
+
+        PriorityQueue<HuffmanNode> minHeap = new PriorityQueue<>();
+        for (int i = 0; i < 256; i++) {
+            if (frequency[i] > 0) {
+                minHeap.offer(new HuffmanNode((char) i, frequency[i]));
+            }
+        }
+
+        while (minHeap.size() > 1) {
+            HuffmanNode left = minHeap.poll();
+            HuffmanNode right = minHeap.poll();
+
+            HuffmanNode mergedNode = new HuffmanNode('\0', left.frequency + right.frequency);
+            mergedNode.left = left;
+            mergedNode.right = right;
+
+            minHeap.offer(mergedNode);
+        }
+
+        return minHeap.poll();
+    }
+
+    private static void printCodes(HuffmanNode root, StringBuilder code) {
+        if (root == null) {
+            return;
+        }
+
+        if (root.data != '\0') {
+            System.out.println(root.data + ": " + code.toString());
+        }
+
+        code.append('0');
+        printCodes(root.left, code);
+        code.deleteCharAt(code.length() - 1);
+
+        code.append('1');
+        printCodes(root.right, code);
+        code.deleteCharAt(code.length() - 1);
+    }
+}
